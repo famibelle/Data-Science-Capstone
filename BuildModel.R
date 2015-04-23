@@ -5,6 +5,7 @@ library(RWeka)
 library(reshape2)
 library(stringr)
 library(shiny)
+library(slam)
 
 # Loading the data
 con <- file("../Data-Science-Capstone-Data/en_US.twitter.txt", "r")
@@ -22,9 +23,15 @@ rm(con)
 
 # Clean the data
 ## Create a corpus
+
+removeNonAlphaCharacter <- function(string){
+    gsub("[^[:alnum:] ]", "",string)
+}
+
 Create_Corpus <- function(sample) {
     Corpus <- VCorpus(VectorSource(sample), readerControl = list(language = "en"))
     Corpus <- tm_map(Corpus, removePunctuation)
+    Corpus <- tm_map(Corpus, removeNonAlphaCharacter)
     Corpus <- tm_map(Corpus, stripWhitespace)
     Corpus <- tm_map(Corpus, removeNumbers)
     Corpus <- tm_map(Corpus, content_transformer(tolower))
@@ -32,7 +39,6 @@ Create_Corpus <- function(sample) {
 #   Corpus <- tm_map(Corpus, stemDocument) # Stem document
     return(Corpus)
 }
-
 
 twitter <-  sample(twitter, size = 10000)
 blogs <-    sample(blogs,   size = 10000)
@@ -56,50 +62,52 @@ N4_Gram_Tokenizer <- function(character_vector) { NGramTokenizer(character_vecto
 ALL_N4_Gram <- TermDocumentMatrix(ALL, control = list( tokenize = N4_Gram_Tokenizer))
 ALL_N4_Gram_Sparse <- removeSparseTerms(ALL_N4_Gram, 0.9995)
 
-ALL_N4_Gram_Analysis <- rowSums(as.matrix(ALL_N4_Gram_Sparse))
-ALL_N4_Gram_Analysis <- sort(ALL_N4_Gram_Analysis, decreasing = TRUE)
+# ALL_N4_Gram_Analysis <- rowSums(as.matrix(ALL_N4_Gram_Sparse))
+ALL_N4_Gram_Analysis <- rollup(ALL_N4_Gram,2,na.rm=TRUE, FUN= sum)
+ALL_N4_Gram_Analysis <- as.matrix(ALL_N4_Gram_Analysis)
 ALL_N4_Gram_Analysis <- as.data.frame(ALL_N4_Gram_Analysis)
 ALL_N4_Gram_Analysis$N3Gram <- rownames(ALL_N4_Gram_Analysis)
 colnames(ALL_N4_Gram_Analysis) <- c("Count", "N4Gram")
-
+ALL_N4_Gram_Analysis <- ALL_N4_Gram_Analysis[order(ALL_N4_Gram_Analysis$Count,decreasing = TRUE),]
+ALL_N4_Gram_Analysis <- cSplit(ALL_N4_Gram_Analysis, "N4Gram", sep = " ")
 
 ### 3-gram
 ALL_N3_Gram <- TermDocumentMatrix(ALL, control = list( tokenize = N3_Gram_Tokenizer))
 ALL_N3_Gram_Sparse <- removeSparseTerms(ALL_N3_Gram, 0.9995)
 
-ALL_N3_Gram_Analysis <- rowSums(as.matrix(ALL_N3_Gram_Sparse))
-ALL_N3_Gram_Analysis <- sort(ALL_N3_Gram_Analysis, decreasing = TRUE)
+ALL_N3_Gram_Analysis <- rollup(ALL_N3_Gram,2,na.rm=TRUE, FUN= sum)
+ALL_N3_Gram_Analysis <- as.matrix(ALL_N3_Gram_Analysis)
 ALL_N3_Gram_Analysis <- as.data.frame(ALL_N3_Gram_Analysis)
 ALL_N3_Gram_Analysis$N3Gram <- rownames(ALL_N3_Gram_Analysis)
-ALL_N3_Gram_Analysis <- ALL_N3_Gram_Analysis[,c(2,1)]
-colnames(ALL_N3_Gram_Analysis) <- c("N3Gram", "Count")
+colnames(ALL_N3_Gram_Analysis) <- c("Count", "N3Gram")
+ALL_N3_Gram_Analysis <- ALL_N3_Gram_Analysis[order(ALL_N3_Gram_Analysis$Count,decreasing = TRUE),]
+ALL_N3_Gram_Analysis <- cSplit(ALL_N3_Gram_Analysis, "N3Gram", sep = " ")
 
 ### 2-gram
 ALL_N2_Gram <- TermDocumentMatrix(ALL, control = list( tokenize = N2_Gram_Tokenizer))
 ALL_N2_Gram_Sparse <- removeSparseTerms(ALL_N2_Gram, 0.9995)
 
-ALL_N2_Gram_Analysis <- rowSums(as.matrix(ALL_N2_Gram_Sparse))
-ALL_N2_Gram_Analysis <- sort(ALL_N2_Gram_Analysis, decreasing = TRUE)
+ALL_N2_Gram_Analysis <- rollup(ALL_N2_Gram,2,na.rm=TRUE, FUN= sum)
+ALL_N2_Gram_Analysis <- as.matrix(ALL_N2_Gram_Analysis)
 ALL_N2_Gram_Analysis <- as.data.frame(ALL_N2_Gram_Analysis)
 ALL_N2_Gram_Analysis$N2Gram <- rownames(ALL_N2_Gram_Analysis)
 colnames(ALL_N2_Gram_Analysis) <- c("Count", "N2Gram")
+ALL_N2_Gram_Analysis <- ALL_N2_Gram_Analysis[order(ALL_N2_Gram_Analysis$Count,decreasing = TRUE),]
+ALL_N2_Gram_Analysis <- cSplit(ALL_N2_Gram_Analysis, "N2Gram", sep = " ")
 
 ### 1-gram
 ALL_N1_Gram <- TermDocumentMatrix(ALL, control = list( tokenize = N1_Gram_Tokenizer))
 ALL_N1_Gram_Sparse <- removeSparseTerms(ALL_N1_Gram, 0.9995)
 
-ALL_N1_Gram_Analysis <- rowSums(as.matrix(ALL_N1_Gram_Sparse))
-ALL_N1_Gram_Analysis <- sort(ALL_N1_Gram_Analysis, decreasing = TRUE)
+ALL_N1_Gram_Analysis <- rollup(ALL_N1_Gram,2,na.rm=TRUE, FUN= sum)
+ALL_N1_Gram_Analysis <- as.matrix(ALL_N1_Gram_Analysis)
 ALL_N1_Gram_Analysis <- as.data.frame(ALL_N1_Gram_Analysis)
-ALL_N1_Gram_Analysis$N2Gram <- rownames(ALL_N1_Gram_Analysis)
+ALL_N1_Gram_Analysis$N1Gram <- rownames(ALL_N1_Gram_Analysis)
 colnames(ALL_N1_Gram_Analysis) <- c("Count", "N1Gram")
+ALL_N1_Gram_Analysis <- ALL_N1_Gram_Analysis[order(ALL_N1_Gram_Analysis$Count,decreasing = TRUE),]
 
 
 # Build the model
-ALL_N4_Gram_Analysis <- cSplit(ALL_N4_Gram_Analysis, "N4Gram", sep = " ")
-ALL_N3_Gram_Analysis <- cSplit(ALL_N3_Gram_Analysis, "N3Gram", sep = " ")
-ALL_N2_Gram_Analysis <- cSplit(ALL_N2_Gram_Analysis, "N2Gram", sep = " ")
-
 save(ALL_N1_Gram_Analysis,ALL_N2_Gram_Analysis,ALL_N3_Gram_Analysis,ALL_N4_Gram_Analysis, file = "n-Grams.RData")
 
 # Train the model
