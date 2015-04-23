@@ -1,0 +1,16 @@
+The application is the final deliverable of the **Coursera Data Science Specialization**. It aims at predicting from an inpiut phrase, what would be the next word in the sentence.
+
+The Corpus is made of three text files extracted from https://d396qusza40orc.cloudfront.net/dsscapstone/dataset/Coursera-SwiftKey.zip
+
+    1. en_US.news.txt file size is 205 811 889 bytes
+
+    1. en_US.blogs.txt file size is 210 160 014 bytes
+
+    1. en_US.twitter.txt file size is 167 105 338 bytes
+    
+All exploratory data analysis are available at http://rpubs.com/medhi/69821.
+
+
+
+
+
