@@ -14,11 +14,13 @@ twitter <- readLines(con)
 close(con)
 
 con <- file("../Data-Science-Capstone-Data/en_US.blogs.txt", "r")
-blogs <- readLines(con, encoding="UTF-8")
+# blogs <- readLines(con, encoding="UTF-8")
+blogs <- readLines(con)
 close(con)
 
 con <- file("../Data-Science-Capstone-Data/en_US.news.txt", "r")
-news <- readLines(con, encoding="UTF-8")
+# news <- readLines(con, encoding="UTF-8")
+news <- readLines(con)
 close(con)
 rm(con)
 
