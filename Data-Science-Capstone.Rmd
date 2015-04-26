@@ -1,0 +1,37 @@
+---
+title: "Data Science Capstone - Final Project"
+author: "Famibelle Médhi"
+date: "Saturday, April 25, 2015"
+output: ioslides_presentation
+---
+
+## Introduction
+The project aim is to build a coherent text prediction app hosted on shiny. It aims at predicting from an input phrase, what would be the next word in the sentence.
+
+The application is the final deliverable of the **Coursera Data Science Specialization**. 
+All the calculation were made on a basic 64 bits laptop with 4Go of RAM and 2.70GHz
+
+## Files description
+
+The Corpus is made of three text files extracted from https://d396qusza40orc.cloudfront.net/dsscapstone/dataset/Coursera-SwiftKey.zip
+
+    - en_US.news.txt file size is 205 811 889 bytes
+
+    - en_US.blogs.txt file size is 210 160 014 bytes
+
+    - en_US.twitter.txt file size is 167 105 338 bytes
+    
+
+## Data
+First I created a Corpus and extract from the Corpus n-Grams, (i.e. unigrams, bigrams, trigrams, 4-grams, 5-grams). Then the 
+
+```{r}
+summary(cars)
+```
+
+## Slide with Plot
+
+```{r, echo=FALSE}
+plot(cars)
+```
+
